@@ -1,0 +1,33 @@
+{
+  "name": "frame-by-frame-netlify",
+  "version": "1.0.0",
+  "description": "Frame By Frame mosaic image generator on Netlify",
+  "main": "index.html",
+  "scripts": {
+    "dev": "netlify dev",
+    "build": "echo 'Static build - no build steps required'"
+  },
+  "keywords": [
+    "mosaic",
+    "image-processing",
+    "netlify",
+    "supabase"
+  ],
+  "author": "Callum O'Connor, Yipeng Zhang, Yiran Dai",
+  "license": "MIT",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.38.0",
+    "aws-sdk": "^2.1473.0",
+    "boto3": "^0.0.1",
+    "cv2": "^0.0.1",
+    "numpy": "^0.0.1",
+    "opencv-python": "^0.0.1",
+    "parse-multipart-data": "^1.5.0",
+    "pillow": "^0.0.0",
+    "sharp": "^0.32.6",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "netlify-cli": "^16.7.0"
+  }
+} 

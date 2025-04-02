@@ -1,0 +1,55 @@
+[build]
+  publish = "."
+  functions = "netlify/functions"
+
+[dev]
+  publish = "."
+  functions = "netlify/functions"
+  port = 8888
+
+[[redirects]]
+  from = "/"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/main"
+  to = "/uploads.html"
+  status = 200
+
+[[redirects]]
+  from = "/Frame/main"
+  to = "/uploads.html"
+  status = 301
+
+[[redirects]]
+  from = "/Frame/*"
+  to = "/:splat"
+  status = 301
+
+# Handle API endpoints
+[[redirects]]
+  from = "/upload"
+  to = "/.netlify/functions/uploadImage"
+  status = 200
+
+[[redirects]]
+  from = "/all-comments"
+  to = "/.netlify/functions/getAllComments"
+  status = 200
+
+[[redirects]]
+  from = "/submit-comment"
+  to = "/.netlify/functions/submitComment"
+  status = 200
+
+[[redirects]]
+  from = "/get_mosaic_images.php"
+  to = "/.netlify/functions/getMosaicImages"
+  status = 200
+  
+[functions]
+  node_bundler = "esbuild"
+
+[functions."processImage"]
+  included_files = ["node_modules/sharp/**/*"] 

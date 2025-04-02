@@ -1,0 +1,113 @@
+body {
+    margin: 0;
+    font-size: 5em;
+    background-color: #242424;
+    opacity: 1;
+    transition: opacity 0.5s ease-out;
+}
+
+.banner {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.banner::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url('/Frame/img/background-frame.jpg');
+    background-size: cover;
+    background-position: center;
+    animation: bgZoomIn 4s ease-in-out 1 forwards;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+.banner::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url('/Frame/img/background-frame.jpg');
+    background-size: cover;
+    background-position: top;
+    transform: scale(2);
+    animation: bgZoomOut 4s ease-in-out 1 forwards;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+.title {
+    width: 90%;
+    max-width: 1000px;
+    height: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.title svg {
+    width: 100%;
+    height: auto;
+    max-width: 1000px;
+}
+
+@keyframes bgZoomIn {
+    from {
+        transform: scale(1.2);
+        opacity: 0;
+    } to {
+        transform: scale(1);
+        opacity: 0.6;
+    }
+}
+
+@keyframes bgZoomOut {
+    from {
+        transform: scale(1);
+        opacity: 0.6;
+    } to {
+        transform: scale(2);
+        opacity: 0;
+    }
+}
+
+svg path {
+    fill: transparent;
+    stroke: #fff;
+    stroke-width: 0.1;
+    stroke-dasharray: 50;
+    stroke-dashoffset: 50;
+    animation: textAnimation 4s ease-in-out 1 forwards;
+}
+
+@keyframes textAnimation {
+    0% {
+        stroke-dashoffset: 50;
+    }
+    80% {
+        fill: transparent;
+    }
+    100% {
+        fill: #fff;
+        stroke-dashoffset: 0;
+    }
+}
+
+/* Media Queries for Responsive Design */
+@media screen and (max-width: 768px) {
+    .title {
+        width: 80%;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .title {
+        width: 90%;
+    }
+}
