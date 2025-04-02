@@ -1,10 +1,13 @@
 [build]
   publish = "."
   functions = "netlify/functions"
-  command = "python3.9 -m pip install -r requirements.txt"
+  command = "npm run build"
 
 [build.environment]
   NODE_VERSION = "16"
+  PYTHON_VERSION = "3.9"
+  MISE_VERBOSE = "1"
+  MISE_USE_PRECOMPILED = "1"
 
 [dev]
   publish = "."
@@ -58,4 +61,5 @@
 
 [functions.processImage]
   runtime = "python3.9"
-  pip_requirements = "./requirements.txt" 
+  pip_requirements = "./requirements.txt"
+  included_files = ["requirements.txt"] 
