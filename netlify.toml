@@ -61,7 +61,18 @@
 [functions]
   node_bundler = "esbuild"
   external_node_modules = ["sharp", "react", "react-dom"]
-  node_version = "14"
+
+[functions.uploadImage]
+  node_version = "18"
+
+[functions.getAllComments]
+  node_version = "18"
+
+[functions.submitComment]
+  node_version = "18"
+
+[functions.getMosaicImages]
+  node_version = "18"
 
 [functions.processImage]
   runtime = "python3.9"
