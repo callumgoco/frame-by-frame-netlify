@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "netlify dev",
     "clean": "rm -rf dist",
-    "build": "npm install && npm run clean && webpack --config webpack.config.js"
+    "build": "npm install && npm run clean && webpack --config webpack.config.js && cp index.html dist/",
+    "start": "webpack serve --mode development"
   },
   "keywords": [
     "mosaic",
@@ -28,13 +29,24 @@
     "uuid": "^9.0.1"
   },
   "devDependencies": {
+    "@babel/core": "^7.24.0",
+    "@babel/preset-env": "^7.24.0",
+    "@babel/preset-react": "^7.23.3",
+    "@babel/preset-typescript": "^7.23.3",
+    "@types/node": "^20.11.24",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
+    "babel-loader": "^9.1.3",
+    "copy-webpack-plugin": "^12.0.2",
+    "css-loader": "^6.10.0",
+    "html-webpack-plugin": "^5.6.0",
     "netlify-cli": "^16.7.0",
+    "style-loader": "^3.3.4",
     "ts-loader": "^9.5.1",
     "typescript": "^5.0.0",
     "webpack": "^5.90.3",
-    "webpack-cli": "^5.1.4"
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^5.0.2"
   },
   "engines": {
     "node": ">=18.0.0",
