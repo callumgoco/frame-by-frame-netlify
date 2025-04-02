@@ -5,8 +5,7 @@
 
 [build.environment]
   NODE_VERSION = "18"
-  NPM_VERSION = "8"
-  PYTHON_VERSION = "3.8.12"
+  PYTHON_VERSION = "3.8"
 
 [dev]
   publish = "."
@@ -59,7 +58,6 @@
   external_node_modules = ["sharp"]
 
 [functions.processImage]
-  included_files = ["requirements.txt"]
   runtime = "python3.8"
 
 [build.processing]
