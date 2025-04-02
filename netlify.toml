@@ -1,13 +1,12 @@
 [build]
   publish = "."
   functions = "netlify/functions"
-  command = "pip install -r requirements.txt && npm run build"
+  command = "npm install"
 
 [build.environment]
   PYTHON_VERSION = "3.9"
   NODE_VERSION = "16"
   PIP_VERSION = "23.0.1"
-  CI = "true"
 
 [dev]
   publish = "."
@@ -60,5 +59,4 @@
   external_node_modules = ["sharp", "react", "react-dom"]
 
 [functions.processImage]
-  runtime = "python3.9"
-  included_files = ["requirements.txt"] 
+  runtime = "python3.9" 
