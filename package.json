@@ -7,7 +7,7 @@
     "dev": "netlify dev",
     "clean": "rm -rf dist",
     "prebuild": "npm install sharp",
-    "build": "npm ci && npm run clean && webpack --mode production && cp -r public/* dist/ && cp index.html dist/",
+    "build": "npm ci && webpack --mode production",
     "start": "webpack serve --mode development"
   },
   "keywords": [
@@ -19,16 +19,11 @@
   "author": "Callum O'Connor, Yipeng Zhang, Yiran Dai",
   "license": "MIT",
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.540.0",
     "@supabase/supabase-js": "^2.39.3",
-    "aws-sdk": "^2.1473.0",
-    "canvas": "^2.11.2",
     "node-fetch": "^2.7.0",
-    "parse-multipart-data": "^1.5.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "sharp": "^0.32.6",
-    "uuid": "^9.0.1"
+    "sharp": "^0.32.6"
   },
   "devDependencies": {
     "@babel/core": "^7.24.0",

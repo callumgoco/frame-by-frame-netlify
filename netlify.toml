@@ -1,18 +1,25 @@
 [build]
   command = "npm run build"
-  publish = "./dist"
-  functions = "netlify/functions"
+  publish = "dist"
+  functions = "dist/functions"
 
 [build.environment]
   NODE_VERSION = "18"
 
-[functions]
-  node_bundler = "esbuild"
-  external_node_modules = ["sharp"]
+[dev]
+  command = "npm run dev"
+  port = 8888
+  publish = "dist"
+  functions = "netlify/functions"
 
 [[redirects]]
   from = "/*"
   to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
   status = 200
 
 [[redirects]]
@@ -50,11 +57,6 @@
   from = "/get_mosaic_images.php"
   to = "/.netlify/functions/getMosaicImages"
   status = 200
-
-[dev]
-  publish = "."
-  functions = "netlify/functions"
-  port = 8888
 
 [build.processing]
   skip_processing = false 
