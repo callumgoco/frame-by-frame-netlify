@@ -5,12 +5,10 @@
 
 [build.environment]
   NODE_VERSION = "18"
-  PYTHON_VERSION = "3.8"
 
-[dev]
-  publish = "."
-  functions = "netlify/functions"
-  port = 8888
+[functions]
+  node_bundler = "esbuild"
+  external_node_modules = ["sharp"]
 
 [[redirects]]
   from = "/*"
@@ -52,13 +50,11 @@
   from = "/get_mosaic_images.php"
   to = "/.netlify/functions/getMosaicImages"
   status = 200
-  
-[functions]
-  node_bundler = "esbuild"
-  external_node_modules = ["sharp"]
 
-[functions.processImage]
-  runtime = "python3.8"
+[dev]
+  publish = "."
+  functions = "netlify/functions"
+  port = 8888
 
 [build.processing]
   skip_processing = false 
