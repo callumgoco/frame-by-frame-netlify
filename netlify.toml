@@ -1,6 +1,11 @@
 [build]
   publish = "."
   functions = "netlify/functions"
+  command = "npm run build"
+
+[build.environment]
+  PYTHON_VERSION = "3.9"
+  NODE_VERSION = "16"
 
 [dev]
   publish = "."
