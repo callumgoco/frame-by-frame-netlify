@@ -5,8 +5,8 @@
   "main": "index.html",
   "scripts": {
     "dev": "netlify dev",
-    "build": "pip install -r requirements.txt",
-    "install": "npm ci"
+    "prebuild": "python3.9 -m pip install --upgrade pip",
+    "build": "npm ci"
   },
   "keywords": [
     "mosaic",
