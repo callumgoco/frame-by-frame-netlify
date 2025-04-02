@@ -1,60 +1,70 @@
 const sharp = require('sharp');
 const fetch = require('node-fetch');
-const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 const { createCanvas, loadImage } = require('canvas');
+const { createClient } = require('@supabase/supabase-js');
 
-// Initialize AWS S3 client for Supabase storage
-const s3 = new S3Client({
-  region: process.env.SUPABASE_REGION || 'eu-central-1',
-  credentials: {
-    accessKeyId: process.env.SUPABASE_ACCESS_KEY,
-    secretAccessKey: process.env.SUPABASE_SECRET_KEY
-  },
-  endpoint: process.env.SUPABASE_STORAGE_URL
-});
+// Initialize Supabase client
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_SERVICE_KEY;
+const supabase = createClient(supabaseUrl, supabaseKey);
 
-// Helper function to get average color of an image buffer
+// CORS Headers
+const headers = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'Content-Type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS'
+};
+
+// Helper function to get average color from buffer
 async function getAverageColor(buffer) {
   const { data, info } = await sharp(buffer)
     .raw()
     .toBuffer({ resolveWithObject: true });
 
-  let totalR = 0, totalG = 0, totalB = 0;
-  for (let i = 0; i < data.length; i += info.channels) {
-    totalR += data[i];
-    totalG += data[i + 1];
-    totalB += data[i + 2];
+  let r = 0, g = 0, b = 0;
+  for (let i = 0; i < data.length; i += 3) {
+    r += data[i];
+    g += data[i + 1];
+    b += data[i + 2];
   }
 
-  const pixelCount = (data.length / info.channels);
-  const avgR = Math.round(totalR / pixelCount / 10) * 10;
-  const avgG = Math.round(totalG / pixelCount / 10) * 10;
-  const avgB = Math.round(totalB / pixelCount / 10) * 10;
-
-  return [avgR, avgG, avgB];
+  const pixelCount = (info.width * info.height);
+  return [
+    Math.round(r / pixelCount),
+    Math.round(g / pixelCount),
+    Math.round(b / pixelCount)
+  ];
 }
 
-// Helper function to find closest color
-function getClosestColor(color, colors) {
-  const [cr, cg, cb] = color;
-  
+// Helper function to get closest color
+function getClosestColor(targetColor, colors) {
+  const [tr, tg, tb] = targetColor;
   let minDifference = Infinity;
   let closestColor = null;
-  
-  for (const c of colors) {
-    const [r, g, b] = JSON.parse(c);
-    const difference = Math.sqrt(
-      Math.pow(r - cr, 2) + 
-      Math.pow(g - cg, 2) + 
-      Math.pow(b - cb, 2)
-    );
+
+  // Color perception weights
+  const weights = {
+    r: 0.3,  // Red weight
+    g: 0.59, // Green weight
+    b: 0.11  // Blue weight
+  };
+
+  for (const colorStr of colors) {
+    const [r, g, b] = JSON.parse(colorStr);
+    
+    // Calculate weighted color difference
+    const rDiff = (r - tr) * weights.r;
+    const gDiff = (g - tg) * weights.g;
+    const bDiff = (b - tb) * weights.b;
+    
+    const difference = Math.sqrt(rDiff * rDiff + gDiff * gDiff + bDiff * bDiff);
     
     if (difference < minDifference) {
       minDifference = difference;
       closestColor = [r, g, b];
     }
   }
-  
+
   return closestColor;
 }
 
@@ -64,94 +74,69 @@ async function downloadImage(url) {
   return await response.buffer();
 }
 
-// Main handler function
 exports.handler = async (event, context) => {
-  // Set up CORS headers
-  const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Content-Type': 'application/json'
-  };
-
-  // Handle OPTIONS request (CORS preflight)
+  // Handle OPTIONS request
   if (event.httpMethod === 'OPTIONS') {
     return {
       statusCode: 200,
-      headers,
-      body: ''
-    };
-  }
-
-  // Only handle POST requests
-  if (event.httpMethod !== 'POST') {
-    return {
-      statusCode: 405,
-      headers,
-      body: JSON.stringify({ error: 'Method not allowed' })
+      headers
     };
   }
 
   try {
-    // Parse the request body
-    const body = JSON.parse(event.body || '{}');
-    const { imageUrl, artStyle = 'Synthetic_Cubism' } = body;
+    const { imageUrl, artStyle = 'Synthetic_Cubism' } = JSON.parse(event.body);
 
-    if (!imageUrl) {
-      return {
-        statusCode: 400,
-        headers,
-        body: JSON.stringify({ error: 'Image URL is required' })
-      };
-    }
+    // Fetch image data
+    const response = await fetch(imageUrl);
+    const imageBuffer = await response.buffer();
 
-    // Validate art style
-    const validStyles = ['Synthetic_Cubism', 'Impressionism', 'Pop_Art'];
-    if (!validStyles.includes(artStyle)) {
-      artStyle = 'Synthetic_Cubism'; // Default
-    }
+    // Get image dimensions
+    const metadata = await sharp(imageBuffer).metadata();
+    const { width, height } = metadata;
 
-    // Download and process the image
-    const imageBuffer = await downloadImage(imageUrl);
-    const image = sharp(imageBuffer);
-    const { width, height } = await image.metadata();
-
-    // Set tile dimensions
+    // Calculate tile dimensions (maintain aspect ratio)
     const tileWidth = 30;
     const tileHeight = 30;
-    const numTilesW = Math.floor(width / tileWidth);
-    const numTilesH = Math.floor(height / tileHeight);
 
-    // Crop image to fit tiles exactly
-    const croppedImage = await image
-      .extract({
-        left: 0,
-        top: 0,
-        width: tileWidth * numTilesW,
-        height: tileHeight * numTilesH
-      })
+    // Ensure dimensions are multiples of tile size
+    const adjustedWidth = Math.floor(width / tileWidth) * tileWidth;
+    const adjustedHeight = Math.floor(height / tileHeight) * tileHeight;
+
+    // Crop image to adjusted dimensions
+    const croppedImage = await sharp(imageBuffer)
+      .resize(adjustedWidth, adjustedHeight, { fit: 'cover' })
       .toBuffer();
 
-    // Create art data (simplified version - in production, fetch from Supabase)
-    const artData = {};
-    for (let r = 0; r < 256; r += 50) {
-      for (let g = 0; g < 256; g += 50) {
-        for (let b = 0; b < 256; b += 50) {
-          const colorKey = JSON.stringify([r, g, b]);
-          artData[colorKey] = [`https://placeholder.com/${artStyle}/${r}_${g}_${b}.jpg`];
-        }
-      }
+    // Get art style images from Supabase
+    const { data: artData, error: artError } = await supabase
+      .from('image_colors')
+      .select('*')
+      .eq('art_style', artStyle);
+
+    if (artError) {
+      throw new Error('Failed to fetch art style data');
     }
+
+    // Create lookup table for colors
+    const colorLookup = {};
+    artData.forEach(item => {
+      const colorKey = JSON.stringify([item.r, item.g, item.b]);
+      if (!colorLookup[colorKey]) {
+        colorLookup[colorKey] = [];
+      }
+      colorLookup[colorKey].push(item.file_path);
+    });
 
     // Process tiles
     const mosaicData = [];
-    const canvas = createCanvas(width, height);
+    const canvas = createCanvas(adjustedWidth, adjustedHeight);
     const ctx = canvas.getContext('2d');
 
-    for (let y = 0; y < height; y += tileHeight) {
-      for (let x = 0; x < width; x += tileWidth) {
+    // Process tiles in a grid
+    for (let y = 0; y < adjustedHeight; y += tileHeight) {
+      for (let x = 0; x < adjustedWidth; x += tileWidth) {
         try {
-          // Extract and process tile
+          // Extract tile
           const tileBuffer = await sharp(croppedImage)
             .extract({
               left: x,
@@ -162,21 +147,30 @@ exports.handler = async (event, context) => {
             .toBuffer();
 
           // Get average color
-          const averageColor = await getAverageColor(tileBuffer);
-          const closestColor = getClosestColor(averageColor, Object.keys(artData));
+          const avgColor = await getAverageColor(tileBuffer);
+          const closestColor = getClosestColor(avgColor, Object.keys(colorLookup));
+          
+          if (closestColor) {
+            const colorKey = JSON.stringify(closestColor);
+            const availableImages = colorLookup[colorKey];
+            
+            if (availableImages && availableImages.length > 0) {
+              // Randomly select an image from available ones
+              const randomImage = availableImages[Math.floor(Math.random() * availableImages.length)];
+              
+              // Store tile data for interactivity
+              mosaicData.push({
+                x,
+                y,
+                size: tileWidth,
+                imagePath: randomImage
+              });
 
-          // Draw the color on canvas
-          ctx.fillStyle = `rgb(${closestColor.join(',')})`;
-          ctx.fillRect(x, y, tileWidth, tileHeight);
-
-          // Store tile data
-          mosaicData.push({
-            x,
-            y,
-            size: tileWidth,
-            color: closestColor,
-            imagePath: artData[JSON.stringify(closestColor)][0]
-          });
+              // Load and draw the tile image
+              const tileImage = await loadImage(randomImage);
+              ctx.drawImage(tileImage, x, y, tileWidth, tileHeight);
+            }
+          }
         } catch (error) {
           console.error('Error processing tile:', error);
           continue;
@@ -184,14 +178,11 @@ exports.handler = async (event, context) => {
       }
     }
 
-    // Convert canvas to buffer
+    // Convert canvas to buffer and base64
     const mosaicBuffer = canvas.toBuffer('image/jpeg');
     const mosaicBase64 = mosaicBuffer.toString('base64');
 
-    // Generate filename
-    const filename = `${imageUrl.split('/').pop().split('.')[0]}_mosaic_${artStyle}.jpg`;
-
-    // Return the result
+    // Return the processed image and tile data
     return {
       statusCode: 200,
       headers,
@@ -207,7 +198,10 @@ exports.handler = async (event, context) => {
     return {
       statusCode: 500,
       headers,
-      body: JSON.stringify({ error: error.message })
+      body: JSON.stringify({
+        success: false,
+        error: error.message
+      })
     };
   }
 }; 
