@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "netlify dev",
     "clean": "rm -rf dist",
+    "prebuild": "npm install sharp",
     "build": "npm install && npm run clean && webpack --config webpack.config.js && cp index.html dist/",
     "start": "webpack serve --mode development"
   },

@@ -6,7 +6,7 @@
 [build.environment]
   NODE_VERSION = "18"
   NPM_VERSION = "8"
-  PYTHON_VERSION = "3.8.12"
+  PYTHON_VERSION = "3.8"
 
 [dev]
   publish = "."
@@ -56,7 +56,8 @@
   
 [functions]
   node_bundler = "esbuild"
-  external_node_modules = ["sharp", "react", "react-dom"]
+  included_files = ["requirements.txt"]
+  external_node_modules = ["sharp"]
 
 [functions.uploadImage]
   node_version = "18"
