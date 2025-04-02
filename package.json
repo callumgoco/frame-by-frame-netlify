@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "netlify dev",
     "clean": "rm -rf dist",
-    "build": "npm ci && npm run clean && webpack --config webpack.config.js"
+    "build": "npm install && npm run clean && webpack --config webpack.config.js"
   },
   "keywords": [
     "mosaic",
