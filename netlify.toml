@@ -6,12 +6,7 @@
 [build.environment]
   NODE_VERSION = "18"
   NPM_VERSION = "8"
-  PYTHON_VERSION = "3.9.13"
-  PIP_VERSION = "23.0.1"
-  MISE_VERBOSE = "1"
-  MISE_USE_PRECOMPILED = "1"
-  GIT_LFS_ENABLED = "true"
-  PYTHON_RUNTIME = "python3.9"
+  PYTHON_VERSION = "3.8.12"
 
 [dev]
   publish = "."
@@ -76,11 +71,8 @@
   node_version = "18"
 
 [functions.processImage]
-  runtime = "python3.9"
+  runtime = "python3.8"
   pip_requirements = "./requirements.txt"
-  included_files = ["requirements.txt"]
-  python_runtime = "python3.9"
-  external_node_modules = []
 
 [build.processing]
   skip_processing = false 
