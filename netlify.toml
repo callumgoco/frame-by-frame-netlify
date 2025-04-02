@@ -50,6 +50,7 @@
   
 [functions]
   node_bundler = "esbuild"
+  external_node_modules = ["sharp"]
 
-[functions."processImage"]
-  included_files = ["node_modules/sharp/**/*"] 
+[functions.processImage]
+  runtime = "python3.9" 

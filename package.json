@@ -18,12 +18,7 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.38.0",
     "aws-sdk": "^2.1473.0",
-    "boto3": "^0.0.1",
-    "cv2": "^0.0.1",
-    "numpy": "^0.0.1",
-    "opencv-python": "^0.0.1",
     "parse-multipart-data": "^1.5.0",
-    "pillow": "^0.0.0",
     "sharp": "^0.32.6",
     "uuid": "^9.0.1"
   },
