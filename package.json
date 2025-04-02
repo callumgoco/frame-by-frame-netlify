@@ -5,7 +5,8 @@
   "main": "index.html",
   "scripts": {
     "dev": "netlify dev",
-    "build": "npm install"
+    "build": "npm install && npm run build:deps",
+    "build:deps": "python -V && pip install -r requirements.txt"
   },
   "keywords": [
     "mosaic",
@@ -19,6 +20,8 @@
     "@supabase/supabase-js": "^2.38.0",
     "aws-sdk": "^2.1473.0",
     "parse-multipart-data": "^1.5.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "sharp": "^0.32.6",
     "uuid": "^9.0.1"
   },

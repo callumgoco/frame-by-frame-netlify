@@ -1,7 +1,7 @@
 [build]
   publish = "."
   functions = "netlify/functions"
-  command = "python -V && pip install -r requirements.txt"
+  command = "npm run build"
 
 [build.environment]
   PYTHON_VERSION = "3.9"
@@ -56,7 +56,7 @@
   
 [functions]
   node_bundler = "esbuild"
-  external_node_modules = ["sharp"]
+  external_node_modules = ["sharp", "react", "react-dom"]
   included_files = ["requirements.txt"]
 
 [functions.processImage]
