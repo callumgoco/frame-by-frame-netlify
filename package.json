@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "netlify dev",
     "prebuild": "python -m pip install --upgrade pip setuptools wheel",
-    "build": "python -m pip install -r requirements.txt && npm ci"
+    "build": "npm ci"
   },
   "keywords": [
     "mosaic",
@@ -17,8 +17,11 @@
   "author": "Callum O'Connor, Yipeng Zhang, Yiran Dai",
   "license": "MIT",
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.540.0",
     "@supabase/supabase-js": "^2.38.0",
     "aws-sdk": "^2.1473.0",
+    "canvas": "^2.11.2",
+    "node-fetch": "^2.7.0",
     "parse-multipart-data": "^1.5.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
