@@ -3,47 +3,51 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
-  mode: 'production',
   entry: './src/index.tsx',
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: 'bundle.js',
-    publicPath: '/'
-  },
-  resolve: {
-    extensions: ['.ts', '.tsx', '.js', '.jsx']
+    filename: '[name].[contenthash].js',
+    clean: true,
   },
   module: {
     rules: [
       {
-        test: /\.tsx?$/,
-        use: ['babel-loader', 'ts-loader'],
-        exclude: /node_modules/
+        test: /\.(ts|tsx)$/,
+        use: 'ts-loader',
+        exclude: /node_modules/,
       },
       {
         test: /\.css$/,
-        use: ['style-loader', 'css-loader']
-      }
-    ]
+        use: ['style-loader', 'css-loader'],
+      },
+      {
+        test: /\.(png|svg|jpg|jpeg|gif)$/i,
+        type: 'asset/resource',
+      },
+    ],
+  },
+  resolve: {
+    extensions: ['.tsx', '.ts', '.js'],
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: './index.html',
-      filename: 'index.html'
+      template: 'public/index.html',
     }),
     new CopyWebpackPlugin({
       patterns: [
         {
           from: 'public',
-          to: '.',
-          noErrorOnMissing: true
-        }
-      ]
-    })
+          to: '',
+          globOptions: {
+            ignore: ['**/index.html'],
+          },
+        },
+      ],
+    }),
   ],
-  devtool: 'source-map',
-  devServer: {
-    historyApiFallback: true,
-    hot: true
-  }
+  optimization: {
+    splitChunks: {
+      chunks: 'all',
+    },
+  },
 }; 

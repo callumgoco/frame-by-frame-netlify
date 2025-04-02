@@ -1,25 +1,29 @@
 import React, { useState } from 'react';
 
 interface CarouselProps {
-  images: string[];
+  images?: string[];
 }
 
-const Carousel: React.FC<CarouselProps> = ({ images }) => {
+const Carousel: React.FC<CarouselProps> = ({ images = [] }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const nextSlide = () => {
+  const handleNext = () => {
     setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
   };
 
-  const prevSlide = () => {
+  const handlePrev = () => {
     setCurrentIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length);
   };
 
+  if (images.length === 0) {
+    return <div>No images to display</div>;
+  }
+
   return (
     <div className="carousel">
-      <button onClick={prevSlide}>&lt;</button>
+      <button onClick={handlePrev}>&lt;</button>
       <img src={images[currentIndex]} alt={`Slide ${currentIndex + 1}`} />
-      <button onClick={nextSlide}>&gt;</button>
+      <button onClick={handleNext}>&gt;</button>
     </div>
   );
 };

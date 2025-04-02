@@ -7,7 +7,7 @@
     "dev": "netlify dev",
     "clean": "rm -rf dist",
     "prebuild": "npm install sharp",
-    "build": "npm ci",
+    "build": "npm ci && npm run clean && webpack --mode production && cp -r public/* dist/ && cp index.html dist/",
     "start": "webpack serve --mode development"
   },
   "keywords": [
