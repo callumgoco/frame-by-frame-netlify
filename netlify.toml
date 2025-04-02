@@ -1,11 +1,12 @@
 [build]
   publish = "."
   functions = "netlify/functions"
-  command = "npm run build"
+  command = "python -V && pip install -r requirements.txt"
 
 [build.environment]
   PYTHON_VERSION = "3.9"
   NODE_VERSION = "16"
+  PIP_VERSION = "23.0.1"
 
 [dev]
   publish = "."
@@ -56,6 +57,8 @@
 [functions]
   node_bundler = "esbuild"
   external_node_modules = ["sharp"]
+  included_files = ["requirements.txt"]
 
 [functions.processImage]
-  runtime = "python3.9" 
+  runtime = "python3.9"
+  handler = "processImage.handler" 
