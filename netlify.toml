@@ -6,7 +6,7 @@
 [build.environment]
   NODE_VERSION = "18"
   NPM_VERSION = "8"
-  PYTHON_VERSION = "3.8"
+  PYTHON_VERSION = "3.8.12"
 
 [dev]
   publish = "."
@@ -56,24 +56,11 @@
   
 [functions]
   node_bundler = "esbuild"
-  included_files = ["requirements.txt"]
   external_node_modules = ["sharp"]
 
-[functions.uploadImage]
-  node_version = "18"
-
-[functions.getAllComments]
-  node_version = "18"
-
-[functions.submitComment]
-  node_version = "18"
-
-[functions.getMosaicImages]
-  node_version = "18"
-
 [functions.processImage]
+  included_files = ["requirements.txt"]
   runtime = "python3.8"
-  pip_requirements = "./requirements.txt"
 
 [build.processing]
   skip_processing = false 
