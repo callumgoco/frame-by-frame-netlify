@@ -5,7 +5,7 @@
   base = "/"
 
 [build.environment]
-  NODE_VERSION = "16"
+  NODE_VERSION = "14"
   PYTHON_VERSION = "3.9"
   MISE_VERBOSE = "1"
   MISE_USE_PRECOMPILED = "1"
@@ -60,6 +60,7 @@
 [functions]
   node_bundler = "esbuild"
   external_node_modules = ["sharp", "react", "react-dom"]
+  node_version = "14"
 
 [functions.processImage]
   runtime = "python3.9"
